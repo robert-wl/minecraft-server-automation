@@ -1,0 +1,34 @@
+services:
+  minecraft:
+    image: "{{ minecraft_image }}"
+    container_name: "{{ minecraft_name }}"
+    restart: unless-stopped
+    ports:
+      - "{{ minecraft_port }}:25565"
+{% if minecraft_rcon_enabled | bool %}
+      - "{{ minecraft_rcon_port }}:25575"
+{% endif %}
+    environment:
+      EULA: "{{ minecraft_eula }}"
+      TYPE: "{{ minecraft_type }}"
+      VERSION: "{{ minecraft_version }}"
+      MEMORY: "{{ minecraft_memory }}"
+      TZ: "{{ minecraft_timezone }}"
+      MOTD: "{{ minecraft_motd }}"
+      DIFFICULTY: "{{ minecraft_difficulty }}"
+      MAX_PLAYERS: "{{ minecraft_max_players }}"
+      ONLINE_MODE: "{{ minecraft_online_mode }}"
+      ENABLE_WHITELIST: "{{ minecraft_enable_whitelist }}"
+{% if minecraft_ops | length > 0 %}
+      OPS: "{{ minecraft_ops }}"
+{% endif %}
+{% if minecraft_whitelist | length > 0 %}
+      WHITELIST: "{{ minecraft_whitelist }}"
+{% endif %}
+      ENABLE_RCON: "{{ (minecraft_rcon_enabled | bool) | ternary('TRUE', 'FALSE') }}"
+{% if minecraft_rcon_enabled | bool %}
+      RCON_PASSWORD: "{{ minecraft_rcon_password }}"
+      RCON_PORT: "{{ minecraft_rcon_port }}"
+{% endif %}
+    volumes:
+      - "{{ minecraft_data_dir }}:/data"

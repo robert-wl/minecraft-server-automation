@@ -1,0 +1,31 @@
+all:
+  children:
+    minecraft_servers:
+      hosts:
+        minecraft-01:
+          ansible_host: 203.0.113.10
+          ansible_user: ubuntu
+
+          # Set this to "TRUE" only after reading and accepting the Minecraft EULA:
+          # https://aka.ms/MinecraftEULA
+          minecraft_eula: "TRUE"
+
+          minecraft_name: minecraft
+          minecraft_port: 25565
+          minecraft_type: VANILLA
+          minecraft_version: LATEST
+          minecraft_memory: 2G
+          minecraft_motd: "An Ansible managed Minecraft server"
+          minecraft_difficulty: normal
+          minecraft_max_players: 20
+
+          # Optional examples:
+          # Sync existing Minecraft server data from this local repo machine to
+          # the remote server before starting the container. Example:
+          # minecraft_local_data_dir: ./minecraft-data
+          # minecraft_local_data_delete: false
+          # minecraft_ops: "your_minecraft_username"
+          # minecraft_enable_whitelist: "TRUE"
+          # minecraft_whitelist: "player_one,player_two"
+          # minecraft_online_mode: "TRUE"
+          # minecraft_rcon_password: "change-this-password"

@@ -1,0 +1,134 @@
+---
+- name: Provision Minecraft server
+  hosts: minecraft_servers
+  become: true
+
+  vars:
+    minecraft_name: minecraft
+    minecraft_image: itzg/minecraft-server:latest
+    minecraft_dir: /opt/minecraft
+    minecraft_data_dir: "{{ minecraft_dir }}/data"
+    minecraft_port: 25565
+    minecraft_type: VANILLA
+    minecraft_version: LATEST
+    minecraft_memory: 2G
+    minecraft_timezone: UTC
+    minecraft_motd: "An Ansible managed Minecraft server"
+    minecraft_difficulty: normal
+    minecraft_max_players: 20
+    minecraft_online_mode: "TRUE"
+    minecraft_enable_whitelist: "FALSE"
+    minecraft_whitelist: ""
+    minecraft_ops: ""
+    minecraft_local_data_dir: ""
+    minecraft_local_data_delete: false
+    minecraft_rcon_enabled: false
+    minecraft_rcon_password: ""
+    minecraft_rcon_port: 25575
+    docker_packages:
+      - docker.io
+      - docker-compose-v2
+      - python3-docker
+      - rsync
+
+  pre_tasks:
+    - name: Require Ubuntu or Debian target
+      ansible.builtin.assert:
+        that:
+          - ansible_os_family == "Debian"
+        fail_msg: This playbook currently supports Ubuntu/Debian targets.
+
+    - name: Require explicit Minecraft EULA acceptance
+      ansible.builtin.assert:
+        that:
+          - minecraft_eula is defined
+          - minecraft_eula | string | upper == "TRUE"
+        fail_msg: Set minecraft_eula to "TRUE" in inventory after reading and accepting https://aka.ms/MinecraftEULA.
+
+    - name: Require RCON password when RCON is enabled
+      ansible.builtin.assert:
+        that:
+          - minecraft_rcon_password | length > 0
+        fail_msg: Set minecraft_rcon_password when minecraft_rcon_enabled is true.
+      when: minecraft_rcon_enabled | bool
+
+  tasks:
+    - name: Install Docker packages
+      ansible.builtin.apt:
+        name: "{{ docker_packages }}"
+        state: present
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Ensure Docker service is enabled and running
+      ansible.builtin.service:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Create Minecraft directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - "{{ minecraft_dir }}"
+        - "{{ minecraft_data_dir }}"
+
+    - name: Render Docker Compose file
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/../templates/docker-compose.yml.j2"
+        dest: "{{ minecraft_dir }}/compose.yml"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Check local Minecraft data directory
+      ansible.builtin.stat:
+        path: "{{ minecraft_local_data_dir }}"
+      register: minecraft_local_data
+      become: false
+      delegate_to: localhost
+      when: minecraft_local_data_dir | length > 0
+
+    - name: Require local Minecraft data directory to exist
+      ansible.builtin.assert:
+        that:
+          - minecraft_local_data.stat.isdir
+        fail_msg: "minecraft_local_data_dir must be an existing directory on the local machine: {{ minecraft_local_data_dir }}"
+      when: minecraft_local_data_dir | length > 0
+
+    - name: Stop Minecraft before syncing local data
+      community.docker.docker_compose_v2:
+        project_src: "{{ minecraft_dir }}"
+        state: absent
+      when: minecraft_local_data_dir | length > 0
+
+    - name: Sync local Minecraft data to server
+      ansible.posix.synchronize:
+        src: "{{ minecraft_local_data_dir | regex_replace('/$', '') }}/"
+        dest: "{{ minecraft_data_dir }}/"
+        archive: true
+        delete: "{{ minecraft_local_data_delete | bool }}"
+        rsync_path: "sudo rsync"
+      when: minecraft_local_data_dir | length > 0
+
+    - name: Check whether UFW is installed
+      ansible.builtin.stat:
+        path: /usr/sbin/ufw
+      register: ufw_binary
+
+    - name: Open Minecraft port with UFW when installed
+      ansible.builtin.command:
+        cmd: "ufw allow {{ minecraft_port }}/tcp"
+      register: ufw_allow
+      changed_when: "'Rule added' in ufw_allow.stdout"
+      when: ufw_binary.stat.exists
+
+    - name: Start Minecraft server
+      community.docker.docker_compose_v2:
+        project_src: "{{ minecraft_dir }}"
+        pull: always
+        state: present
