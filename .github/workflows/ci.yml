@@ -1,0 +1,48 @@
+---
+name: CI
+
+"on":
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ansible:
+    name: Ansible checks
+    runs-on: ubuntu-latest
+    env:
+      ANSIBLE_INVENTORY: inventory.example.yml
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8
+        with:
+          enable-cache: true
+
+      - name: Check uv lockfile
+        run: uv lock --check
+
+      - name: Install Python dependencies
+        run: uv sync --locked
+
+      - name: Install Ansible collections
+        run: uv run ansible-galaxy collection install -r requirements.yml
+
+      - name: Lint YAML
+        run: uv run yamllint .
+
+      - name: Check playbook syntax
+        run: uv run ansible-playbook -i inventory.example.yml --syntax-check playbooks/minecraft.yml
+
+      - name: Lint Ansible
+        run: uv run ansible-lint
