@@ -1,0 +1,25 @@
+---
+- name: Stop Minecraft server
+  hosts: minecraft_servers
+  become: true
+
+  vars:
+    minecraft_dir: /opt/docker/minecraft-vanilla
+    minecraft_compose_file: "{{ minecraft_dir }}/compose.yml"
+
+  tasks:
+    - name: Check Minecraft Compose file
+      ansible.builtin.stat:
+        path: "{{ minecraft_compose_file }}"
+      register: minecraft_compose
+
+    - name: Stop Minecraft stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ minecraft_dir }}"
+        state: absent
+      when: minecraft_compose.stat.exists
+
+    - name: Report missing Minecraft stack
+      ansible.builtin.debug:
+        msg: "No Compose file found at {{ minecraft_compose_file }}; nothing to stop."
+      when: not minecraft_compose.stat.exists

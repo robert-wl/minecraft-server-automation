@@ -11,7 +11,11 @@ installed, and starts the server container.
 
 - `ansible.cfg` - local Ansible defaults for this project.
 - `inventory.example.yml` - copy this to `inventory.yml` and set your server.
+- `Makefile` - convenience targets for setup, checks, and deploys.
 - `playbooks/minecraft.yml` - provisions Docker and starts the server.
+- `playbooks/stop.yml` - stops and removes the Minecraft Compose stack.
+- `playbooks/restart.yml` - restarts the Minecraft Compose stack.
+- `playbooks/nuke.yml` - stops Minecraft and deletes the server data directory.
 - `templates/docker-compose.yml.j2` - Compose file for `itzg/minecraft-server`.
 - `requirements.yml` - Ansible collection dependencies for Docker Compose and
   local data sync.
@@ -23,6 +27,12 @@ On your control machine:
 ```bash
 uv sync
 uv run ansible-galaxy collection install -r requirements.yml
+```
+
+Or with Make:
+
+```bash
+make setup
 ```
 
 On the target server:
@@ -37,6 +47,12 @@ Create your inventory:
 
 ```bash
 cp inventory.example.yml inventory.yml
+```
+
+Or:
+
+```bash
+make inventory
 ```
 
 Edit `inventory.yml` and set:
@@ -66,30 +82,101 @@ mirror the local one exactly.
 uv run ansible-playbook playbooks/minecraft.yml
 ```
 
-The server data is stored on the host in `/opt/minecraft/data` by default.
+Or:
+
+```bash
+make deploy
+```
+
+The server data is stored on the host in `/opt/docker/minecraft-vanilla/data`
+by default.
+
+## Make Targets
+
+Show available targets:
+
+```bash
+make help
+```
+
+Run a syntax check before deploying:
+
+```bash
+make syntax-check
+```
+
+Check SSH/Ansible connectivity:
+
+```bash
+make ping
+```
+
+Prompt for an SSH password instead of using an SSH key:
+
+```bash
+make ping-password
+```
+
+Deploy with SSH and sudo password prompts:
+
+```bash
+make deploy-password
+```
+
+Stop the Minecraft stack while keeping server data:
+
+```bash
+make stop
+```
+
+Restart the Minecraft stack:
+
+```bash
+make restart
+```
+
+Stop Minecraft and delete the server data directory:
+
+```bash
+make nuke CONFIRM_NUKE=true
+```
+
+Use the password variants when SSH or sudo requires a password:
+
+```bash
+make stop-password
+make restart-password
+make nuke-password CONFIRM_NUKE=true
+```
+
+Use a different inventory file:
+
+```bash
+make deploy INVENTORY=staging.yml
+```
 
 ## Common Operations
 
 View logs:
 
 ```bash
-ssh <server> 'cd /opt/minecraft && sudo docker compose logs -f minecraft'
+ssh <server> 'cd /opt/docker/minecraft-vanilla && sudo docker compose logs -f minecraft'
 ```
 
 Restart the server:
 
 ```bash
-ssh <server> 'cd /opt/minecraft && sudo docker compose restart minecraft'
+make restart
 ```
 
 Stop the server:
 
 ```bash
-ssh <server> 'cd /opt/minecraft && sudo docker compose down'
+make stop
 ```
 
 Back up the world directory before changing major server versions:
 
 ```bash
-ssh <server> 'sudo tar -C /opt/minecraft/data -czf /opt/minecraft/world-backup.tgz world'
+ssh <server> 'sudo tar -C /opt/docker/minecraft-vanilla/data -czf /opt/docker/minecraft-vanilla/world-backup.tgz world'
 ```

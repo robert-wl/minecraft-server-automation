@@ -14,7 +14,7 @@ all:
           minecraft_port: 25565
           minecraft_type: VANILLA
           minecraft_version: LATEST
-          minecraft_memory: 2G
+          minecraft_memory: 4G
           minecraft_motd: "An Ansible managed Minecraft server"
           minecraft_difficulty: normal
           minecraft_max_players: 20
@@ -27,5 +27,5 @@ all:
           # minecraft_ops: "your_minecraft_username"
           # minecraft_enable_whitelist: "TRUE"
           # minecraft_whitelist: "player_one,player_two"
-          # minecraft_online_mode: "TRUE"
+          minecraft_online_mode: "FALSE"
           # minecraft_rcon_password: "change-this-password"
