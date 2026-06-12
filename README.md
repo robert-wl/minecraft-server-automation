@@ -152,6 +152,10 @@ snapshot part of the live `/data` tree. By default the remote snapshot is
 deleted after a successful pull. Set `minecraft_pull_cleanup_snapshot: false`
 to keep it on the server.
 
+The final pull uses `rsync` from the local machine to the remote server. That
+connection must work with key-based SSH, and `sudo rsync` on the remote host
+must not require an interactive sudo password.
+
 ## Mods
 
 Set `minecraft_type` to the needed server loader, such as `FABRIC` or `FORGE`,
@@ -284,7 +288,6 @@ Use the password variants when SSH or sudo requires a password:
 
 ```bash
 make stop-password
-make pull-data-password
 make restart-password
 make nuke-password CONFIRM_NUKE=true
 ```

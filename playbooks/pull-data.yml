@@ -27,6 +27,16 @@
           {{ minecraft_data_dir | regex_replace('/+$', '') }}
         minecraft_remote_snapshot_dir_normalized: >-
           {{ minecraft_remote_snapshot_dir | regex_replace('/+$', '') }}
+        minecraft_local_data_dir_normalized: >-
+          {{
+            (
+              minecraft_local_data_dir
+              if minecraft_local_data_dir.startswith('/')
+              else playbook_dir ~ '/../' ~ (
+                minecraft_local_data_dir | regex_replace('^\\./', '')
+              )
+            ) | regex_replace('/+$', '')
+          }}
 
     - name: Require snapshot directory outside live data directory
       ansible.builtin.assert:
@@ -74,7 +84,7 @@
 
     - name: Create local Minecraft data directory
       ansible.builtin.file:
-        path: "{{ minecraft_local_data_dir }}"
+        path: "{{ minecraft_local_data_dir_normalized }}"
         state: directory
         mode: "0755"
       become: false
@@ -114,10 +124,12 @@
       ansible.posix.synchronize:
         mode: pull
         src: "{{ minecraft_remote_snapshot_dir_normalized }}/"
-        dest: "{{ minecraft_local_data_dir | regex_replace('/+$', '') }}/"
+        dest: "{{ minecraft_local_data_dir_normalized }}/"
         archive: true
         delete: "{{ minecraft_local_data_delete | bool }}"
         rsync_path: "sudo rsync"
+        private_key: "{{ ansible_private_key_file | default(omit) }}"
+        use_ssh_args: true
         rsync_opts:
           - "--exclude=.gitkeep"
 
