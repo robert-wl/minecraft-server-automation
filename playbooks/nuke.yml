@@ -4,7 +4,8 @@
   become: true
 
   vars:
-    minecraft_dir: /opt/docker/minecraft-vanilla
+    minecraft_type: VANILLA
+    minecraft_dir: "/opt/docker/minecraft-{{ minecraft_type | string | lower }}"
     minecraft_data_dir: "{{ minecraft_dir }}/data"
     minecraft_compose_file: "{{ minecraft_dir }}/compose.yml"
     minecraft_confirm_nuke: false

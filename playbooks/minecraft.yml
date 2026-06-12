@@ -6,12 +6,16 @@
   vars:
     minecraft_name: minecraft
     minecraft_image: itzg/minecraft-server:latest
-    minecraft_dir: /opt/docker/minecraft-vanilla
+    minecraft_dir: "/opt/docker/minecraft-{{ minecraft_type | string | lower }}"
     minecraft_data_dir: "{{ minecraft_dir }}/data"
     minecraft_port: 25565
     minecraft_type: VANILLA
     minecraft_version: LATEST
     minecraft_memory: 4G
+    minecraft_fabric_loader_version: ""
+    minecraft_fabric_launcher_version: ""
+    minecraft_fabric_launcher: ""
+    minecraft_fabric_meta_base_url: ""
     minecraft_timezone: UTC
     minecraft_motd: "Vanilla minecraft server"
     minecraft_difficulty: normal
