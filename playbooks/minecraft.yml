@@ -6,17 +6,17 @@
   vars:
     minecraft_name: minecraft
     minecraft_image: itzg/minecraft-server:latest
-    minecraft_dir: /opt/minecraft
+    minecraft_dir: /opt/docker/minecraft-vanilla
     minecraft_data_dir: "{{ minecraft_dir }}/data"
     minecraft_port: 25565
     minecraft_type: VANILLA
     minecraft_version: LATEST
-    minecraft_memory: 2G
+    minecraft_memory: 4G
     minecraft_timezone: UTC
-    minecraft_motd: "An Ansible managed Minecraft server"
+    minecraft_motd: "Vanilla minecraft server"
     minecraft_difficulty: normal
     minecraft_max_players: 20
-    minecraft_online_mode: "TRUE"
+    minecraft_online_mode: "FALSE"
     minecraft_enable_whitelist: "FALSE"
     minecraft_whitelist: ""
     minecraft_ops: ""
@@ -55,18 +55,26 @@
       when: minecraft_rcon_enabled | bool
 
   tasks:
-    - name: Install Docker packages
+    - name: Check Docker CLI
+      ansible.builtin.command: docker --version
+      register: docker_cli_check
+      changed_when: false
+      failed_when: false
+
+    - name: Check Docker Compose plugin
+      ansible.builtin.command: docker compose version
+      register: docker_compose_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install Docker packages when Docker is missing
       ansible.builtin.apt:
         name: "{{ docker_packages }}"
         state: present
         update_cache: true
-      when: ansible_os_family == "Debian"
-
-    - name: Ensure Docker service is enabled and running
-      ansible.builtin.service:
-        name: docker
-        enabled: true
-        state: started
+      when:
+        - ansible_os_family == "Debian"
+        - docker_cli_check.rc != 0 or docker_compose_check.rc != 0
 
     - name: Create Minecraft directories
       ansible.builtin.file:

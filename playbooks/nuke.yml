@@ -1,0 +1,36 @@
+---
+- name: Nuke Minecraft server data
+  hosts: minecraft_servers
+  become: true
+
+  vars:
+    minecraft_dir: /opt/docker/minecraft-vanilla
+    minecraft_data_dir: "{{ minecraft_dir }}/data"
+    minecraft_compose_file: "{{ minecraft_dir }}/compose.yml"
+    minecraft_confirm_nuke: false
+
+  pre_tasks:
+    - name: Require explicit nuke confirmation
+      ansible.builtin.assert:
+        that:
+          - minecraft_confirm_nuke | bool
+        fail_msg: >-
+          Set minecraft_confirm_nuke=true to stop Minecraft and delete
+          {{ minecraft_data_dir }}.
+
+  tasks:
+    - name: Check Minecraft Compose file
+      ansible.builtin.stat:
+        path: "{{ minecraft_compose_file }}"
+      register: minecraft_compose
+
+    - name: Stop Minecraft stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ minecraft_dir }}"
+        state: absent
+      when: minecraft_compose.stat.exists
+
+    - name: Delete Minecraft data directory
+      ansible.builtin.file:
+        path: "{{ minecraft_data_dir }}"
+        state: absent
