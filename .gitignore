@@ -2,3 +2,5 @@
 .venv/
 inventory.yml
 *.retry
+minecraft-data/*
+!minecraft-data/.gitkeep

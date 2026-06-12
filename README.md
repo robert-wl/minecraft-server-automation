@@ -13,6 +13,7 @@ installed, and starts the server container.
 - `inventory.example.yml` - copy this to `inventory.yml` and set your server.
 - `Makefile` - convenience targets for setup, checks, and deploys.
 - `playbooks/minecraft.yml` - provisions Docker and starts the server.
+- `playbooks/pull-data.yml` - snapshots remote data and pulls it locally.
 - `playbooks/stop.yml` - stops and removes the Minecraft Compose stack.
 - `playbooks/restart.yml` - restarts the Minecraft Compose stack.
 - `playbooks/nuke.yml` - stops Minecraft and deletes the server data directory.
@@ -130,6 +131,26 @@ By default it does not delete remote files that are missing locally. Set
 `minecraft_local_data_delete: true` if you want the remote data directory to
 mirror the local one exactly.
 
+To pull the remote server data back to this machine, use:
+
+```bash
+make pull-data
+```
+
+The pull playbook briefly stops the remote Minecraft stack, copies live data to
+a remote snapshot directory, starts the stack again, and then syncs that stable
+snapshot down to `minecraft_local_data_dir`. The default snapshot path is a
+sibling of the live data directory:
+
+```yaml
+minecraft_remote_snapshot_dir: "{{ minecraft_dir }}/sync-snapshot"
+```
+
+Do not place the snapshot under `minecraft_data_dir`; that would make the
+snapshot part of the live `/data` tree. By default the remote snapshot is
+deleted after a successful pull. Set `minecraft_pull_cleanup_snapshot: false`
+to keep it on the server.
+
 ## Deploy
 
 ```bash
@@ -178,6 +199,12 @@ Deploy with SSH and sudo password prompts:
 make deploy-password
 ```
 
+Pull remote server data to `./minecraft-data`:
+
+```bash
+make pull-data
+```
+
 Stop the Minecraft stack while keeping server data:
 
 ```bash
@@ -200,6 +227,7 @@ Use the password variants when SSH or sudo requires a password:
 
 ```bash
 make stop-password
+make pull-data-password
 make restart-password
 make nuke-password CONFIRM_NUKE=true
 ```

@@ -30,6 +30,10 @@ all:
           # Sync existing Minecraft server data from this local repo machine to
           # the remote server before starting the container. Example:
           # minecraft_local_data_dir: ./minecraft-data
+          # Pull remote server data back to the same local directory with:
+          # make pull-data
+          # minecraft_remote_snapshot_dir: /opt/docker/minecraft-vanilla/sync-snapshot
+          # minecraft_pull_cleanup_snapshot: true
           # minecraft_local_data_delete: false
           # minecraft_ops: "your_minecraft_username"
           # minecraft_enable_whitelist: "TRUE"
