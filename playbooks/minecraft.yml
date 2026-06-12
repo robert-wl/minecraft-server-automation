@@ -43,7 +43,9 @@
         that:
           - minecraft_eula is defined
           - minecraft_eula | string | upper == "TRUE"
-        fail_msg: Set minecraft_eula to "TRUE" in inventory after reading and accepting https://aka.ms/MinecraftEULA.
+        fail_msg: >-
+          Set minecraft_eula to "TRUE" in inventory after reading and accepting
+          https://aka.ms/MinecraftEULA.
 
     - name: Require RCON password when RCON is enabled
       ansible.builtin.assert:
@@ -87,7 +89,7 @@
 
     - name: Render Docker Compose file
       ansible.builtin.template:
-        src: "{{ playbook_dir }}/../templates/docker-compose.yml.j2"
+        src: docker-compose.yml.j2
         dest: "{{ minecraft_dir }}/compose.yml"
         owner: root
         group: root
@@ -105,7 +107,9 @@
       ansible.builtin.assert:
         that:
           - minecraft_local_data.stat.isdir
-        fail_msg: "minecraft_local_data_dir must be an existing directory on the local machine: {{ minecraft_local_data_dir }}"
+        fail_msg: >-
+          minecraft_local_data_dir must be an existing directory on the local
+          machine: {{ minecraft_local_data_dir }}
       when: minecraft_local_data_dir | length > 0
 
     - name: Stop Minecraft before syncing local data

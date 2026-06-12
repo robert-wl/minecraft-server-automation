@@ -41,6 +41,23 @@ On the target server:
 - Ubuntu or Debian.
 - The configured Minecraft port reachable from players.
 
+## CI / Local Checks
+
+GitHub Actions checks that the lockfile is current, installs the Ansible
+collections, lints YAML and Ansible content, and runs a playbook syntax check
+against the example inventory.
+
+Run the same checks locally with:
+
+```bash
+uv lock --check
+uv sync --locked
+uv run ansible-galaxy collection install -r requirements.yml
+uv run yamllint .
+uv run ansible-playbook -i inventory.example.yml --syntax-check playbooks/minecraft.yml
+ANSIBLE_INVENTORY=inventory.example.yml uv run ansible-lint
+```
+
 ## Configure
 
 Create your inventory:
