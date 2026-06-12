@@ -1,0 +1,43 @@
+---
+minecraft_name: minecraft
+minecraft_image: itzg/minecraft-server:latest
+minecraft_type: VANILLA
+minecraft_dir: "/opt/docker/minecraft-{{ minecraft_type | string | lower }}"
+minecraft_data_dir: "{{ minecraft_dir }}/data"
+minecraft_compose_file: "{{ minecraft_dir }}/compose.yml"
+minecraft_port: 25565
+minecraft_version: LATEST
+minecraft_memory: 4G
+minecraft_fabric_loader_version: ""
+minecraft_fabric_launcher_version: ""
+minecraft_fabric_launcher: ""
+minecraft_fabric_meta_base_url: ""
+minecraft_timezone: UTC
+minecraft_motd: "Vanilla minecraft server"
+minecraft_difficulty: normal
+minecraft_max_players: 20
+minecraft_online_mode: "FALSE"
+minecraft_enable_whitelist: "FALSE"
+minecraft_whitelist: ""
+minecraft_ops: ""
+minecraft_mod_mode: none
+minecraft_mod_urls: ""
+minecraft_mods_file: ""
+minecraft_modrinth_projects: ""
+minecraft_curseforge_files: ""
+minecraft_curseforge_api_key: ""
+minecraft_curseforge_api_key_file: ""
+minecraft_local_data_dir: ""
+minecraft_local_data_delete: false
+minecraft_remote_snapshot_dir: "{{ minecraft_dir }}/sync-snapshot"
+minecraft_pull_stop_server: true
+minecraft_pull_cleanup_snapshot: true
+minecraft_confirm_nuke: false
+minecraft_rcon_enabled: false
+minecraft_rcon_password: ""
+minecraft_rcon_port: 25575
+docker_packages:
+  - docker.io
+  - docker-compose-v2
+  - python3-docker
+  - rsync

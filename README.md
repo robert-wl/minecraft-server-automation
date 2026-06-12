@@ -13,6 +13,7 @@ installed, and starts the server container.
 - `inventory.example.yml` - copy this to `inventory.yml` and set your server.
 - `Makefile` - convenience targets for setup, checks, and deploys.
 - `playbooks/minecraft.yml` - provisions Docker and starts the server.
+- `playbooks/group_vars/all.yml` - default Minecraft and Docker variables.
 - `playbooks/pull-data.yml` - snapshots remote data and pulls it locally.
 - `playbooks/stop.yml` - stops and removes the Minecraft Compose stack.
 - `playbooks/restart.yml` - restarts the Minecraft Compose stack.
