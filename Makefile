@@ -4,7 +4,7 @@ PLAYBOOK ?= playbooks/minecraft.yml
 LIMIT ?= minecraft_servers
 CONFIRM_NUKE ?= false
 
-.PHONY: help setup sync collections inventory lock-check lint check install-hooks syntax-check syntax-check-example ping ping-password deploy deploy-password pull-data pull-data-password stop stop-password restart restart-password nuke nuke-password
+.PHONY: help setup sync collections inventory lock-check lint check install-hooks syntax-check syntax-check-example ping ping-password deploy deploy-password pull-data stop stop-password restart restart-password nuke nuke-password
 
 help:
 	@printf '%s\n' \
@@ -21,7 +21,6 @@ help:
 		'  make deploy                Deploy the Minecraft server' \
 		'  make deploy-password       Deploy and prompt for SSH/sudo passwords' \
 		'  make pull-data             Pull remote Minecraft data to ./minecraft-data' \
-		'  make pull-data-password    Pull data with SSH/sudo password prompts' \
 		'  make stop                  Stop and remove the Minecraft container stack' \
 		'  make stop-password         Stop with SSH/sudo password prompts' \
 		'  make restart               Restart the Minecraft container stack' \
@@ -86,9 +85,6 @@ deploy-password:
 
 pull-data:
 	uv run ansible-playbook -i "$(INVENTORY)" playbooks/pull-data.yml
-
-pull-data-password:
-	uv run ansible-playbook -i "$(INVENTORY)" playbooks/pull-data.yml --ask-pass --ask-become-pass
 
 stop:
 	uv run ansible-playbook -i "$(INVENTORY)" playbooks/stop.yml

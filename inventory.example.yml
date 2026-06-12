@@ -33,6 +33,7 @@ all:
           # minecraft_local_data_dir: ./minecraft-data
           # Pull remote server data back to the same local directory with:
           # make pull-data
+          # This requires key-based SSH and passwordless sudo for rsync.
           # minecraft_remote_snapshot_dir: /opt/docker/minecraft-vanilla/sync-snapshot
           # minecraft_pull_cleanup_snapshot: true
           # minecraft_local_data_delete: false
