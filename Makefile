@@ -4,12 +4,15 @@ PLAYBOOK ?= playbooks/minecraft.yml
 LIMIT ?= minecraft_servers
 CONFIRM_NUKE ?= false
 
-.PHONY: help setup sync collections inventory syntax-check syntax-check-example ping ping-password deploy deploy-password stop stop-password restart restart-password nuke nuke-password
+.PHONY: help setup sync collections inventory lock-check lint check install-hooks syntax-check syntax-check-example ping ping-password deploy deploy-password stop stop-password restart restart-password nuke nuke-password
 
 help:
 	@printf '%s\n' \
 		'Targets:' \
 		'  make setup                 Install Python deps and Ansible collections' \
+		'  make lint                  Run YAML, syntax, and Ansible lint checks' \
+		'  make check                 Run lockfile and lint checks' \
+		'  make install-hooks         Install pre-commit hooks' \
 		'  make inventory             Create inventory.yml from inventory.example.yml if missing' \
 		'  make syntax-check          Syntax-check the playbook with inventory.yml' \
 		'  make syntax-check-example  Syntax-check the playbook with inventory.example.yml' \
@@ -39,6 +42,19 @@ sync:
 
 collections:
 	uv run ansible-galaxy collection install -r requirements.yml
+
+lock-check:
+	uv lock --check
+
+lint:
+	uv run yamllint .
+	uv run ansible-playbook -i "$(EXAMPLE_INVENTORY)" --syntax-check "$(PLAYBOOK)"
+	ANSIBLE_INVENTORY="$(EXAMPLE_INVENTORY)" uv run ansible-lint
+
+check: lock-check lint
+
+install-hooks:
+	uv run pre-commit install
 
 inventory:
 	@if [ -f "$(INVENTORY)" ]; then \

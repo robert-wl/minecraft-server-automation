@@ -50,12 +50,15 @@ against the example inventory.
 Run the same checks locally with:
 
 ```bash
-uv lock --check
-uv sync --locked
-uv run ansible-galaxy collection install -r requirements.yml
-uv run yamllint .
-uv run ansible-playbook -i inventory.example.yml --syntax-check playbooks/minecraft.yml
-ANSIBLE_INVENTORY=inventory.example.yml uv run ansible-lint
+make setup
+make check
+```
+
+Install the pre-commit hooks once per clone to run the same local checks before
+commits:
+
+```bash
+make install-hooks
 ```
 
 ## Configure

@@ -1,0 +1,29 @@
+---
+repos:
+  - repo: local
+    hooks:
+      - id: uv-lock-check
+        name: Check uv lockfile
+        entry: uv lock --check
+        language: system
+        pass_filenames: false
+
+      - id: yamllint
+        name: Lint YAML
+        entry: uv run yamllint .
+        language: system
+        pass_filenames: false
+
+      - id: ansible-syntax-check
+        name: Check Ansible playbook syntax
+        entry: >-
+          uv run ansible-playbook -i inventory.example.yml
+          --syntax-check playbooks/minecraft.yml
+        language: system
+        pass_filenames: false
+
+      - id: ansible-lint
+        name: Lint Ansible
+        entry: env ANSIBLE_INVENTORY=inventory.example.yml uv run ansible-lint
+        language: system
+        pass_filenames: false
