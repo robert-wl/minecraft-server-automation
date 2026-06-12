@@ -39,6 +39,27 @@ services:
 {% if minecraft_whitelist | length > 0 %}
       WHITELIST: "{{ minecraft_whitelist }}"
 {% endif %}
+{% if minecraft_mod_mode == "urls" %}
+      MODS: |-
+{{ minecraft_mod_urls | indent(8, true) }}
+{% endif %}
+{% if minecraft_mod_mode == "urls_file" %}
+      MODS_FILE: "{{ minecraft_mods_file }}"
+{% endif %}
+{% if minecraft_mod_mode == "modrinth" %}
+      MODRINTH_PROJECTS: |-
+{{ minecraft_modrinth_projects | indent(8, true) }}
+{% endif %}
+{% if minecraft_mod_mode == "curseforge" %}
+      CURSEFORGE_FILES: |-
+{{ minecraft_curseforge_files | indent(8, true) }}
+{% if minecraft_curseforge_api_key | length > 0 %}
+      CF_API_KEY: "{{ minecraft_curseforge_api_key }}"
+{% endif %}
+{% if minecraft_curseforge_api_key_file | length > 0 %}
+      CF_API_KEY_FILE: "{{ minecraft_curseforge_api_key_file }}"
+{% endif %}
+{% endif %}
       ENABLE_RCON: "{{ (minecraft_rcon_enabled | bool) | ternary('TRUE', 'FALSE') }}"
 {% if minecraft_rcon_enabled | bool %}
       RCON_PASSWORD: "{{ minecraft_rcon_password }}"
