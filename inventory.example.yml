@@ -28,5 +28,5 @@ all:
           # minecraft_ops: "your_minecraft_username"
           # minecraft_enable_whitelist: "TRUE"
           # minecraft_whitelist: "player_one,player_two"
-          minecraft_online_mode: "FALSE"
+          # minecraft_online_mode: "FALSE"
           # minecraft_rcon_password: "change-this-password"
