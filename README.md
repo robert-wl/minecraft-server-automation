@@ -12,7 +12,8 @@ installed, and starts the server container.
 - `ansible.cfg` - local Ansible defaults for this project.
 - `inventory.example.yml` - copy this to `inventory.yml` and set your server.
 - `playbooks/minecraft.yml` - provisions Docker and starts the server.
-- `templates/docker-compose.yml.j2` - Compose file for `itzg/minecraft-server`.
+- `playbooks/templates/docker-compose.yml.j2` - Compose file for
+  `itzg/minecraft-server`.
 - `requirements.yml` - Ansible collection dependencies for Docker Compose and
   local data sync.
 
@@ -30,6 +31,23 @@ On the target server:
 - SSH access with a sudo-capable user.
 - Ubuntu or Debian.
 - The configured Minecraft port reachable from players.
+
+## CI / Local Checks
+
+GitHub Actions checks that the lockfile is current, installs the Ansible
+collections, lints YAML and Ansible content, and runs a playbook syntax check
+against the example inventory.
+
+Run the same checks locally with:
+
+```bash
+uv lock --check
+uv sync --locked
+uv run ansible-galaxy collection install -r requirements.yml
+uv run yamllint .
+uv run ansible-playbook -i inventory.example.yml --syntax-check playbooks/minecraft.yml
+ANSIBLE_INVENTORY=inventory.example.yml uv run ansible-lint
+```
 
 ## Configure
 
