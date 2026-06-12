@@ -10,9 +10,23 @@ services:
 {% endif %}
     environment:
       EULA: "{{ minecraft_eula }}"
-      TYPE: "{{ minecraft_type }}"
+      TYPE: "{{ minecraft_type | string | upper }}"
       VERSION: "{{ minecraft_version }}"
       MEMORY: "{{ minecraft_memory }}"
+{% if minecraft_type | string | upper == "FABRIC" %}
+{% if minecraft_fabric_loader_version | length > 0 %}
+      FABRIC_LOADER_VERSION: "{{ minecraft_fabric_loader_version }}"
+{% endif %}
+{% if minecraft_fabric_launcher_version | length > 0 %}
+      FABRIC_LAUNCHER_VERSION: "{{ minecraft_fabric_launcher_version }}"
+{% endif %}
+{% if minecraft_fabric_launcher | length > 0 %}
+      FABRIC_LAUNCHER: "{{ minecraft_fabric_launcher }}"
+{% endif %}
+{% if minecraft_fabric_meta_base_url | length > 0 %}
+      FABRIC_META_BASE_URL: "{{ minecraft_fabric_meta_base_url }}"
+{% endif %}
+{% endif %}
       TZ: "{{ minecraft_timezone }}"
       MOTD: "{{ minecraft_motd }}"
       DIFFICULTY: "{{ minecraft_difficulty }}"

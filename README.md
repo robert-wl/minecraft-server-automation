@@ -81,6 +81,40 @@ Edit `inventory.yml` and set:
 - Optional server settings such as `minecraft_type`, `minecraft_version`,
   `minecraft_memory`, `minecraft_motd`, `minecraft_ops`, and whitelist values.
 
+### Server Type
+
+Vanilla is the default server type:
+
+```yaml
+minecraft_type: VANILLA
+```
+
+To run Fabric, set:
+
+```yaml
+minecraft_type: FABRIC
+minecraft_version: "1.21.6"
+```
+
+The `itzg/minecraft-server` image installs the latest compatible Fabric loader
+and launcher by default. Pin them only when you need a specific version:
+
+```yaml
+minecraft_fabric_loader_version: "0.16.14"
+minecraft_fabric_launcher_version: "1.0.3"
+```
+
+Advanced Fabric options are also available:
+
+```yaml
+minecraft_fabric_launcher: fabric-server-custom.jar
+minecraft_fabric_meta_base_url: https://meta.fabricmc.net
+```
+
+Fabric mods can be seeded by placing them under `mods/` in
+`minecraft_local_data_dir`, since that directory syncs into the container's
+`/data` volume.
+
 To seed the server from Minecraft data on this local machine, set:
 
 ```yaml
@@ -106,7 +140,8 @@ make deploy
 ```
 
 The server data is stored on the host in `/opt/docker/minecraft-vanilla/data`
-by default.
+by default. If you change `minecraft_type` and do not set `minecraft_dir`, the
+path changes with it, for example `/opt/docker/minecraft-fabric/data`.
 
 ## Make Targets
 
