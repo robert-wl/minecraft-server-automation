@@ -83,7 +83,8 @@ Edit `inventory.yml` and set:
 - `minecraft_eula: "TRUE"` after you have read and accepted the Minecraft EULA.
 - `minecraft_port`, if you do not want the default `25565`.
 - Optional server settings such as `minecraft_type`, `minecraft_version`,
-  `minecraft_memory`, `minecraft_motd`, `minecraft_ops`, and whitelist values.
+  `minecraft_memory`, `minecraft_motd`, `minecraft_ops`, mod mode, and
+  whitelist values.
 
 ### Server Type
 
@@ -150,6 +151,62 @@ Do not place the snapshot under `minecraft_data_dir`; that would make the
 snapshot part of the live `/data` tree. By default the remote snapshot is
 deleted after a successful pull. Set `minecraft_pull_cleanup_snapshot: false`
 to keep it on the server.
+
+## Mods
+
+Set `minecraft_type` to the needed server loader, such as `FABRIC` or `FORGE`,
+then choose how mods are supplied with `minecraft_mod_mode`.
+
+`none` is the default. It does not configure any itzg download automation; the
+server uses whatever is already in `/data`, including files synced from
+`minecraft-data/mods` when `minecraft_local_data_dir: ./minecraft-data` is set.
+
+```yaml
+minecraft_type: FABRIC
+minecraft_mod_mode: none
+minecraft_local_data_dir: ./minecraft-data
+```
+
+Use `urls` for direct jar URLs or container paths:
+
+```yaml
+minecraft_type: FABRIC
+minecraft_mod_mode: urls
+minecraft_mod_urls: |
+  https://example.com/mods/example-mod.jar
+```
+
+Use `urls_file` for an itzg `MODS_FILE` text file. The value can be a URL or a
+container path. For a repo-managed file, put `mods.txt` in `minecraft-data` and
+set `minecraft_local_data_dir`, then reference `/data/mods.txt`.
+
+```yaml
+minecraft_type: FABRIC
+minecraft_mod_mode: urls_file
+minecraft_local_data_dir: ./minecraft-data
+minecraft_mods_file: /data/mods.txt
+```
+
+Use `modrinth` for Modrinth project slugs or IDs:
+
+```yaml
+minecraft_type: FABRIC
+minecraft_mod_mode: modrinth
+minecraft_modrinth_projects: |
+  fabric-api
+  lithium
+```
+
+Use `curseforge` for CurseForge project/file references. This requires a
+CurseForge API key or key file.
+
+```yaml
+minecraft_type: FORGE
+minecraft_mod_mode: curseforge
+minecraft_curseforge_files: |
+  jei
+minecraft_curseforge_api_key: "change-this-key"
+```
 
 ## Deploy
 

@@ -24,6 +24,13 @@
     minecraft_enable_whitelist: "FALSE"
     minecraft_whitelist: ""
     minecraft_ops: ""
+    minecraft_mod_mode: none
+    minecraft_mod_urls: ""
+    minecraft_mods_file: ""
+    minecraft_modrinth_projects: ""
+    minecraft_curseforge_files: ""
+    minecraft_curseforge_api_key: ""
+    minecraft_curseforge_api_key_file: ""
     minecraft_local_data_dir: ""
     minecraft_local_data_delete: false
     minecraft_rcon_enabled: false
@@ -57,6 +64,52 @@
           - minecraft_rcon_password | length > 0
         fail_msg: Set minecraft_rcon_password when minecraft_rcon_enabled is true.
       when: minecraft_rcon_enabled | bool
+
+    - name: Require supported Minecraft mod mode
+      ansible.builtin.assert:
+        that:
+          - >-
+            minecraft_mod_mode in [
+              "none", "urls", "urls_file", "modrinth", "curseforge"
+            ]
+        fail_msg: >-
+          Set minecraft_mod_mode to one of: none, urls, urls_file, modrinth,
+          curseforge.
+
+    - name: Require mod URL list for urls mode
+      ansible.builtin.assert:
+        that:
+          - minecraft_mod_urls | length > 0
+        fail_msg: Set minecraft_mod_urls when minecraft_mod_mode is urls.
+      when: minecraft_mod_mode == "urls"
+
+    - name: Require mods file for urls_file mode
+      ansible.builtin.assert:
+        that:
+          - minecraft_mods_file | length > 0
+        fail_msg: Set minecraft_mods_file when minecraft_mod_mode is urls_file.
+      when: minecraft_mod_mode == "urls_file"
+
+    - name: Require Modrinth projects for modrinth mode
+      ansible.builtin.assert:
+        that:
+          - minecraft_modrinth_projects | length > 0
+        fail_msg: >-
+          Set minecraft_modrinth_projects when minecraft_mod_mode is modrinth.
+      when: minecraft_mod_mode == "modrinth"
+
+    - name: Require CurseForge files and API key for curseforge mode
+      ansible.builtin.assert:
+        that:
+          - minecraft_curseforge_files | length > 0
+          - >-
+            minecraft_curseforge_api_key | length > 0 or
+            minecraft_curseforge_api_key_file | length > 0
+        fail_msg: >-
+          Set minecraft_curseforge_files and either minecraft_curseforge_api_key
+          or minecraft_curseforge_api_key_file when minecraft_mod_mode is
+          curseforge.
+      when: minecraft_mod_mode == "curseforge"
 
   tasks:
     - name: Check Docker CLI
