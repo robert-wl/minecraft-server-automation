@@ -14,7 +14,9 @@
       ansible.builtin.assert:
         that:
           - minecraft_confirm_nuke | bool
-        fail_msg: "Set minecraft_confirm_nuke=true to stop Minecraft and delete {{ minecraft_data_dir }}."
+        fail_msg: >-
+          Set minecraft_confirm_nuke=true to stop Minecraft and delete
+          {{ minecraft_data_dir }}.
 
   tasks:
     - name: Check Minecraft Compose file

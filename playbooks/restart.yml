@@ -17,7 +17,9 @@
       ansible.builtin.assert:
         that:
           - minecraft_compose.stat.exists
-        fail_msg: "No Compose file found at {{ minecraft_compose_file }}. Run the deploy playbook first."
+        fail_msg: >-
+          No Compose file found at {{ minecraft_compose_file }}.
+          Run the deploy playbook first.
 
   tasks:
     - name: Restart Minecraft stack
