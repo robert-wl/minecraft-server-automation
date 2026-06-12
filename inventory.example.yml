@@ -19,12 +19,28 @@ all:
           minecraft_motd: "An Ansible managed Minecraft server"
           minecraft_difficulty: normal
           minecraft_max_players: 20
+          minecraft_mod_mode: none
 
           # Optional examples:
           # Sync existing Minecraft server data from this local repo machine to
           # the remote server before starting the container. Example:
           # minecraft_local_data_dir: ./minecraft-data
           # minecraft_local_data_delete: false
+          #
+          # Mod modes:
+          # - none: use mods already present in /data, such as files synced
+          #   from ./minecraft-data/mods
+          # - urls: set minecraft_mod_urls to direct jar URLs or container paths
+          # - urls_file: set minecraft_mods_file to a text file URL or a
+          #   container path such as /data/mods.txt
+          # - modrinth: set minecraft_modrinth_projects to Modrinth slugs/IDs
+          # - curseforge: set minecraft_curseforge_files and a CurseForge API key
+          #
+          # minecraft_type: FABRIC
+          # minecraft_mod_mode: modrinth
+          # minecraft_modrinth_projects: |
+          #   fabric-api
+          #   lithium
           # minecraft_ops: "your_minecraft_username"
           # minecraft_enable_whitelist: "TRUE"
           # minecraft_whitelist: "player_one,player_two"
