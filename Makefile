@@ -6,7 +6,7 @@ CONFIRM_NUKE ?= false
 VAULT_FILE ?= group_vars/minecraft_servers/vault.yml
 VAULT_ARGS = $(if $(wildcard $(VAULT_FILE)),--ask-vault-pass,)
 
-.PHONY: help setup sync collections inventory lock-check lint check install-hooks syntax-check syntax-check-example vault-create vault-edit vault-check ping deploy deploy-vault pull-data pull-data-vault stop stop-vault restart restart-vault nuke nuke-vault
+.PHONY: help setup sync collections inventory lock-check lint check install-hooks syntax-check syntax-check-example vault-create vault-edit vault-check ping deploy pull-data stop restart nuke
 
 help:
 	@printf '%s\n' \
@@ -23,17 +23,11 @@ help:
 		'  make vault-check           Check Vault defines ansible_become_password' \
 		'  make ping                  Ping hosts in the minecraft_servers group' \
 		'  make deploy                Deploy; uses Vault automatically if present' \
-		'  make deploy-vault          Deploy and read sudo password from Vault' \
-		'  make pull-data             Pull remote Minecraft data to ./minecraft-data' \
-		'  make pull-data-vault       Pull data and read sudo password from Vault' \
-		'  make stop                  Stop and remove the Minecraft container stack' \
-		'  make stop-vault            Stop and read sudo password from Vault' \
-		'  make restart               Restart the Minecraft container stack' \
-		'  make restart-vault         Restart and read sudo password from Vault' \
+		'  make pull-data             Pull data; uses Vault automatically if present' \
+		'  make stop                  Stop stack; uses Vault automatically if present' \
+		'  make restart               Restart stack; uses Vault automatically if present' \
 		'  make nuke CONFIRM_NUKE=true' \
-		'                              Stop Minecraft and delete server data' \
-		'  make nuke-vault CONFIRM_NUKE=true' \
-		'                              Nuke and read sudo password from Vault' \
+		'                              Delete data; uses Vault automatically if present' \
 		'' \
 		'Variables:' \
 		'  INVENTORY=path/to/inventory.yml' \
@@ -97,29 +91,14 @@ ping:
 deploy:
 	uv run ansible-playbook -i "$(INVENTORY)" "$(PLAYBOOK)" $(VAULT_ARGS)
 
-deploy-vault:
-	uv run ansible-playbook -i "$(INVENTORY)" "$(PLAYBOOK)" --ask-vault-pass
-
 pull-data:
-	uv run ansible-playbook -i "$(INVENTORY)" playbooks/pull-data.yml
-
-pull-data-vault:
-	uv run ansible-playbook -i "$(INVENTORY)" playbooks/pull-data.yml --ask-vault-pass
+	uv run ansible-playbook -i "$(INVENTORY)" playbooks/pull-data.yml $(VAULT_ARGS)
 
 stop:
-	uv run ansible-playbook -i "$(INVENTORY)" playbooks/stop.yml
-
-stop-vault:
-	uv run ansible-playbook -i "$(INVENTORY)" playbooks/stop.yml --ask-vault-pass
+	uv run ansible-playbook -i "$(INVENTORY)" playbooks/stop.yml $(VAULT_ARGS)
 
 restart:
-	uv run ansible-playbook -i "$(INVENTORY)" playbooks/restart.yml
-
-restart-vault:
-	uv run ansible-playbook -i "$(INVENTORY)" playbooks/restart.yml --ask-vault-pass
+	uv run ansible-playbook -i "$(INVENTORY)" playbooks/restart.yml $(VAULT_ARGS)
 
 nuke:
-	uv run ansible-playbook -i "$(INVENTORY)" playbooks/nuke.yml -e "minecraft_confirm_nuke=$(CONFIRM_NUKE)"
-
-nuke-vault:
-	uv run ansible-playbook -i "$(INVENTORY)" playbooks/nuke.yml -e "minecraft_confirm_nuke=$(CONFIRM_NUKE)" --ask-vault-pass
+	uv run ansible-playbook -i "$(INVENTORY)" playbooks/nuke.yml -e "minecraft_confirm_nuke=$(CONFIRM_NUKE)" $(VAULT_ARGS)

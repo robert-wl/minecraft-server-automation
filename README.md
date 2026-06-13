@@ -107,22 +107,16 @@ Save and close the editor. Ansible will create
 entered. This repo ignores that local vault file by default so deployment
 secrets are not accidentally published.
 
-Deploy with:
+Deploy with the normal target:
 
 ```bash
 make deploy
 ```
 
-When `group_vars/minecraft_servers/vault.yml` exists, `make deploy`
-automatically prompts for the Vault password, decrypts
-`ansible_become_password` in memory, and uses it for sudo. It does not prompt
-for the SSH password.
-
-You can also run the explicit Vault target:
-
-```bash
-make deploy-vault
-```
+When `group_vars/minecraft_servers/vault.yml` exists, playbook targets such as
+`make deploy`, `make pull-data`, `make stop`, `make restart`, and `make nuke`
+automatically prompt for the Vault password, decrypt `ansible_become_password`
+in memory, and use it for sudo. They do not prompt for the SSH password.
 
 To edit the encrypted sudo password later:
 
