@@ -1,6 +1,10 @@
 .context/
 .venv/
 inventory.yml
+.vault-pass
+.vault-password
+*.vault-pass
+group_vars/**/vault.yml
 *.retry
 minecraft-data/**
 !minecraft-data/**/
