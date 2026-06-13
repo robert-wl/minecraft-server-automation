@@ -1,8 +1,10 @@
 ---
-minecraft_name: minecraft
 minecraft_image: itzg/minecraft-server:latest
 minecraft_type: VANILLA
 minecraft_dir: "/opt/docker/minecraft-{{ minecraft_type | string | lower }}"
+minecraft_container_name: >-
+  {{ minecraft_name |
+  default(minecraft_dir | regex_replace('/+$', '') | basename, true) }}
 minecraft_data_dir: "{{ minecraft_dir }}/data"
 minecraft_compose_file: "{{ minecraft_dir }}/compose.yml"
 minecraft_port: 25565
