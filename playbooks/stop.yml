@@ -3,11 +3,6 @@
   hosts: minecraft_servers
   become: true
 
-  vars:
-    minecraft_type: VANILLA
-    minecraft_dir: "/opt/docker/minecraft-{{ minecraft_type | string | lower }}"
-    minecraft_compose_file: "{{ minecraft_dir }}/compose.yml"
-
   tasks:
     - name: Check Minecraft Compose file
       ansible.builtin.stat:

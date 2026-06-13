@@ -3,13 +3,6 @@
   hosts: minecraft_servers
   become: true
 
-  vars:
-    minecraft_type: VANILLA
-    minecraft_dir: "/opt/docker/minecraft-{{ minecraft_type | string | lower }}"
-    minecraft_data_dir: "{{ minecraft_dir }}/data"
-    minecraft_compose_file: "{{ minecraft_dir }}/compose.yml"
-    minecraft_confirm_nuke: false
-
   pre_tasks:
     - name: Require explicit nuke confirmation
       ansible.builtin.assert:
