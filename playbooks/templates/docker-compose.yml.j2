@@ -1,7 +1,7 @@
 services:
   minecraft:
     image: "{{ minecraft_image }}"
-    container_name: "{{ minecraft_name }}"
+    container_name: "{{ minecraft_container_name }}"
     restart: unless-stopped
     ports:
       - "{{ minecraft_port }}:25565"

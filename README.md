@@ -84,8 +84,8 @@ Edit `inventory.yml` and set:
 - `minecraft_eula: "TRUE"` after you have read and accepted the Minecraft EULA.
 - `minecraft_port`, if you do not want the default `25565`.
 - Optional server settings such as `minecraft_type`, `minecraft_version`,
-  `minecraft_memory`, `minecraft_motd`, `minecraft_ops`, mod mode, and
-  whitelist values.
+  `minecraft_memory`, `minecraft_motd`, `minecraft_ops`,
+  `minecraft_container_name`, mod mode, and whitelist values.
 
 ### Server Type
 
@@ -224,6 +224,18 @@ make deploy
 The server data is stored on the host in `/opt/docker/minecraft-vanilla/data`
 by default. If you change `minecraft_type` and do not set `minecraft_dir`, the
 path changes with it, for example `/opt/docker/minecraft-fabric/data`.
+
+The Docker container name defaults to the `minecraft_dir` directory name. For
+example, `/opt/docker/minecraft-vanilla` creates a container named
+`minecraft-vanilla`, and `/opt/docker/minecraft-fabric` creates
+`minecraft-fabric`. Override it only when you need a different fixed name:
+
+```yaml
+minecraft_container_name: minecraft-production
+```
+
+Older inventories that set `minecraft_name` still use that value as the
+container name, but new inventories should use `minecraft_container_name`.
 
 ## Make Targets
 

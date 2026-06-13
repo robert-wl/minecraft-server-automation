@@ -11,7 +11,6 @@ all:
           # https://aka.ms/MinecraftEULA
           minecraft_eula: "TRUE"
 
-          minecraft_name: minecraft
           minecraft_port: 25565
           minecraft_type: VANILLA
           minecraft_version: LATEST
@@ -36,6 +35,9 @@ all:
           # minecraft_remote_snapshot_dir: /opt/docker/minecraft-vanilla/sync-snapshot
           # minecraft_pull_cleanup_snapshot: true
           # minecraft_local_data_delete: false
+          # Override the Docker container name if it should differ from the
+          # minecraft_dir directory name:
+          # minecraft_container_name: minecraft-production
           #
           # Mod modes:
           # - none: use mods already present in /data, such as files synced
