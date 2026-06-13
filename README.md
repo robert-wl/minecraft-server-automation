@@ -87,6 +87,62 @@ Edit `inventory.yml` and set:
   `minecraft_memory`, `minecraft_motd`, `minecraft_ops`,
   `minecraft_container_name`, mod mode, and whitelist values.
 
+### Sudo Password With Ansible Vault
+
+If SSH key auth works but the remote sudo user still requires a password, store
+the sudo password in an encrypted Ansible Vault group variable:
+
+```bash
+make vault-create
+```
+
+When the editor opens, add:
+
+```yaml
+ansible_become_password: "your-remote-sudo-password"
+```
+
+Save and close the editor. Ansible will create
+`group_vars/minecraft_servers/vault.yml`, encrypted with the Vault password you
+entered. This repo ignores that local vault file by default so deployment
+secrets are not accidentally published.
+
+Deploy with the normal target:
+
+```bash
+make deploy
+```
+
+When `group_vars/minecraft_servers/vault.yml` exists, playbook targets such as
+`make deploy`, `make pull-data`, `make stop`, `make restart`, and `make nuke`
+automatically prompt for the Vault password, decrypt `ansible_become_password`
+in memory, and use it for sudo. They do not prompt for the SSH password.
+
+To edit the encrypted sudo password later:
+
+```bash
+make vault-edit
+```
+
+To verify Ansible can read the sudo password variable without printing the
+secret:
+
+```bash
+make vault-check
+```
+
+For fully non-interactive local runs, create a local Vault password file and
+pass it to Ansible:
+
+```bash
+uv run ansible-playbook -i inventory.yml playbooks/minecraft.yml \
+  --vault-password-file .vault-pass
+```
+
+Local Vault password files such as `.vault-pass` and local encrypted sudo
+password files such as `group_vars/minecraft_servers/vault.yml` are ignored by
+git.
+
 ### Server Type
 
 Vanilla is the default server type:
@@ -257,18 +313,6 @@ Check SSH/Ansible connectivity:
 make ping
 ```
 
-Prompt for an SSH password instead of using an SSH key:
-
-```bash
-make ping-password
-```
-
-Deploy with SSH and sudo password prompts:
-
-```bash
-make deploy-password
-```
-
 Pull remote server data to `./minecraft-data`:
 
 ```bash
@@ -291,15 +335,6 @@ Stop Minecraft and delete the server data directory:
 
 ```bash
 make nuke CONFIRM_NUKE=true
-```
-
-Use the password variants when SSH or sudo requires a password:
-
-```bash
-make stop-password
-make pull-data-password
-make restart-password
-make nuke-password CONFIRM_NUKE=true
 ```
 
 Use a different inventory file:
